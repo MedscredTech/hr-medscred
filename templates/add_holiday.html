@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add New Holiday - Medscred HRMS</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+  <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #f8fbff 0%, #e3f2fd 50%, #bbdefb 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #212529;
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      color: #0d47a1 !important;
+      font-size: 1.5rem;
+    }
+    
+    .navbar {
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 4px 20px rgba(21,101,192, 0.15);
+      border-bottom: 3px solid #2196f3;
+    }
+    
+    .card-dashboard {
+      box-shadow: 0 12px 35px rgba(21,101,192,0.1);
+      border-radius: 1.2rem;
+      background: #fff;
+      padding: 2rem;
+      margin: 2rem auto;
+      max-width: 800px;
+      border: 2px solid #e3f2fd;
+    }
+    
+    .form-control {
+      border: 2px solid #e3f2fd;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      border-color: #2196f3;
+      box-shadow: 0 0 0 0.2rem rgba(33,150,243,0.25);
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #1565c0;
+      margin-bottom: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #2196f3, #1565c0);
+      border: none;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1976d2, #0d47a1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d, #495057);
+      border: none;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #5a6268, #343a40);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(108,117,125,0.3);
+    }
+    
+    footer {
+      margin-top: auto;
+      padding: 1.5rem 0;
+      background: rgba(255,255,255,0.9);
+      text-align: center;
+      font-size: 0.9rem;
+      color: #1565c0;
+      border-top: 2px solid #2196f3;
+    }
+    
+    .page-title {
+      text-align: center;
+      color: #1565c0;
+      margin-bottom: 2rem;
+    }
+    
+    .form-section {
+      background: #f8fbff;
+      padding: 2rem;
+      border-radius: 1rem;
+      border: 1px solid #e3f2fd;
+    }
+    
+    .alert {
+      border-radius: 0.5rem;
+      border: none;
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-group-text {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border: 2px solid #e3f2fd;
+      color: #1565c0;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="#">Medscred HRMS - Add Holiday</a>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <a href="{{ url_for('holidays_list') }}" class="btn btn-secondary btn-sm d-flex align-items-center">
+          <i class="bi bi-arrow-left me-1"></i> Back to Holidays
+        </a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-info btn-sm d-flex align-items-center">
+          <i class="bi bi-speedometer2 me-1"></i> Dashboard
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm d-flex align-items-center">
+          <i class="bi bi-box-arrow-right me-1"></i> Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="card-dashboard">
+      <h2 class="page-title">
+        <i class="bi bi-calendar-plus me-2"></i>Add New Holiday
+      </h2>
+      
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+              <i class="bi bi-{{ 'exclamation-triangle' if category == 'error' else 'check-circle' }} me-2"></i>
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      
+      <div class="form-section">
+        <form method="POST" id="holidayForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="holiday_date" class="form-label">
+                  <i class="bi bi-calendar-date me-1"></i>Holiday Date
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-calendar3"></i>
+                  </span>
+                  <input type="date" 
+                         class="form-control" 
+                         id="holiday_date" 
+                         name="holiday_date" 
+                         required>
+                </div>
+                <div class="form-text">Select the date for this holiday</div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="holiday_name" class="form-label">
+                  <i class="bi bi-calendar-heart me-1"></i>Holiday Name
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-type"></i>
+                  </span>
+                  <input type="text" 
+                         class="form-control" 
+                         id="holiday_name" 
+                         name="holiday_name" 
+                         placeholder="e.g., Christmas Day" 
+                         required
+                         maxlength="255">
+                </div>
+                <div class="form-text">Enter the name of the holiday</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label for="description" class="form-label">
+              <i class="bi bi-file-text me-1"></i>Description
+            </label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="bi bi-chat-text"></i>
+              </span>
+              <textarea class="form-control" 
+                        id="description" 
+                        name="description" 
+                        rows="3" 
+                        placeholder="Optional: Brief description of the holiday"
+                        maxlength="500"></textarea>
+            </div>
+            <div class="form-text">Provide additional details about this holiday (optional)</div>
+          </div>
+          
+          <div class="d-flex justify-content-center gap-3">
+            <button type="submit" class="btn btn-primary d-flex align-items-center">
+              <i class="bi bi-plus-circle me-2"></i>Add Holiday
+            </button>
+            <a href="{{ url_for('holidays_list') }}" class="btn btn-secondary d-flex align-items-center">
+              <i class="bi bi-x-circle me-2"></i>Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Help Section -->
+      <div class="mt-4 p-3 bg-light rounded">
+        <h6 class="text-muted mb-2">
+          <i class="bi bi-info-circle me-1"></i>Tips for Adding Holidays:
+        </h6>
+        <ul class="text-muted mb-0 small">
+          <li>Holiday dates cannot be in the past</li>
+          <li>Each holiday date should be unique</li>
+          <li>Holiday names should be descriptive and clear</li>
+          <li>Description field is optional but recommended for clarity</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    &copy; {{ current_year or '2025' }} Medscred HRMS. All rights reserved.
+  </footer>
+
+  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Form validation and enhancement
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('holidayForm');
+      const dateInput = document.getElementById('holiday_date');
+      const nameInput = document.getElementById('holiday_name');
+      
+      // Set minimum date to today using JavaScript instead of Jinja
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.min = today;
+      
+      // Form submission with validation
+      form.addEventListener('submit', function(e) {
+        const selectedDate = new Date(dateInput.value);
+        const currentDate = new Date();
+        
+        if (selectedDate < currentDate) {
+          e.preventDefault();
+          alert('Holiday date cannot be in the past. Please select a future date.');
+          dateInput.focus();
+          return;
+        }
+        
+        if (nameInput.value.trim().length < 2) {
+          e.preventDefault();
+          alert('Holiday name must be at least 2 characters long.');
+          nameInput.focus();
+          return;
+        }
+        
+        // Add loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Adding Holiday...';
+        submitBtn.disabled = true;
+      });
+      
+      // Auto-capitalize holiday name
+      nameInput.addEventListener('input', function() {
+        this.value = this.value.replace(/\b\w/g, l => l.toUpperCase());
+      });
+      
+      // Add smooth animation
+      form.style.animation = 'fadeInUp 0.6s ease-out';
+    });
+
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
