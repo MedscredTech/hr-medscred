@@ -127,6 +127,36 @@ def datetimeformat(value, format='%d-%b-%Y %I:%M %p'):
         value = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
     return value.strftime(format)
 
+# @app.route('/', methods=['GET', 'POST'])
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     error = None
+#     if request.method == 'POST':
+#         email = request.form['email'].strip()
+#         password = request.form['password']
+        
+#         conn = get_db_connection()
+#         with conn.cursor() as cursor:
+#             cursor.execute("SELECT id, password, firstname, lastname, role FROM t_users_hr WHERE email=%s AND is_active=1", (email,))
+#             user = cursor.fetchone()
+            
+#             # SHA256 password verification
+#             if user and verify_password(password, user['password']):
+#                 session['user_id'] = user['id']
+#                 session['firstname'] = user['firstname']
+#                 session['lastname'] = user['lastname']
+#                 session['role'] = user['role']
+                
+#                 if user['role'] == 2:  # admin
+#                     return redirect('/admin_dashboard')
+#                 else:
+#                     return redirect('/user_dashboard')
+#             else:
+#                 error = 'Invalid email or password.'
+#         conn.close()
+    
+#     return render_template('login.html', error=error)
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -136,26 +166,42 @@ def login():
         password = request.form['password']
         
         conn = get_db_connection()
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT id, password, firstname, lastname, role FROM t_users_hr WHERE email=%s AND is_active=1", (email,))
-            user = cursor.fetchone()
-            
-            # SHA256 password verification
-            if user and verify_password(password, user['password']):
-                session['user_id'] = user['id']
-                session['firstname'] = user['firstname']
-                session['lastname'] = user['lastname']
-                session['role'] = user['role']
+        
+        # ✅ Check if connection is valid
+        if conn is None:
+            error = 'Database connection failed. Please try again.'
+            return render_template('login.html', error=error)
+        
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id, password, firstname, lastname, role FROM t_users_hr WHERE email=%s AND is_active=1", (email,))
+                user = cursor.fetchone()
                 
-                if user['role'] == 2:  # admin
-                    return redirect('/admin_dashboard')
+                # SHA256 password verification
+                if user and verify_password(password, user['password']):
+                    session['user_id'] = user['id']
+                    session['firstname'] = user['firstname']
+                    session['lastname'] = user['lastname']
+                    session['role'] = user['role']
+                    
+                    if user['role'] == 2:  # admin
+                        return redirect('/admin_dashboard')
+                    else:
+                        return redirect('/user_dashboard')
                 else:
-                    return redirect('/user_dashboard')
-            else:
-                error = 'Invalid email or password.'
-        conn.close()
+                    error = 'Invalid email or password.'
+        
+        except Exception as e:
+            error = 'An error occurred during login. Please try again.'
+            print(f"Login error: {e}")  # For debugging
+        
+        finally:
+            # ✅ Always close connection
+            if conn:
+                conn.close()
     
     return render_template('login.html', error=error)
+
 
 @app.route('/test_time')
 def test_time():
